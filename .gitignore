@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Pycharm
+.idea/
+migrations/
+
 # Distribution / packaging
 .Python
 build/
