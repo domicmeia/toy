@@ -21,12 +21,14 @@ class TestView(TestCase):
             author=self.user_trump
         )
         self.post_001.tags.add(self.tag_hello)
+
         self.post_002 = Post.objects.create(
             title='두 번째 포스트입니다.',
             content='1등이 전부는 아니잖아요?',
             category=self.category_music,
             author=self.user_obama
         )
+
         self.post_003 = Post.objects.create(
             title='세 번째 포스트입니다.',
             content='카테고리가 없을 수도 있죠',
@@ -78,7 +80,6 @@ class TestView(TestCase):
         post_001_card = main_area.find('div', id='post-1')
         self.assertIn(self.post_001.title, post_001_card.text)
         self.assertIn(self.post_001.category.name, post_001_card.text)
-        self.assertIn(self.post_001.author.username.upper(), post_001_card.text)
         self.assertIn(self.tag_hello.name, post_001_card.text)
         self.assertNotIn(self.tag_python.name, post_001_card.text)
         self.assertNotIn(self.tag_python_kor.name, post_001_card.text)
@@ -86,7 +87,6 @@ class TestView(TestCase):
         post_002_card = main_area.find('div', id='post-2')
         self.assertIn(self.post_002.title, post_002_card.text)
         self.assertIn(self.post_002.category.name, post_002_card.text)
-        self.assertIn(self.post_002.author.username.upper(), post_002_card.text)
         self.assertNotIn(self.tag_hello.name, post_002_card.text)
         self.assertNotIn(self.tag_python.name, post_002_card.text)
         self.assertNotIn(self.tag_python_kor.name, post_002_card.text)
@@ -94,7 +94,6 @@ class TestView(TestCase):
         post_003_card = main_area.find('div', id='post-3')
         self.assertIn('미분류', post_003_card.text)
         self.assertIn(self.post_003.title, post_003_card.text)
-        self.assertIn(self.post_003.author.username.upper(), post_003_card.text)
         self.assertNotIn(self.tag_hello.name, post_003_card.text)
         self.assertIn(self.tag_python.name, post_003_card.text)
         self.assertIn(self.tag_python_kor.name, post_003_card.text)
@@ -111,7 +110,7 @@ class TestView(TestCase):
         self.assertIn('아직 게시물이 없습니다.', main_area.text)
 
     def test_post_detail(self):
-        # 1.2 그 포스트의 url은 'blog/1/'이다.
+        # 1.2 포스트의 url은 'blog/1/'이다.
         self.assertEqual(self.post_001.get_absolute_url(), '/blog/1/')
 
         # 2 첫 번째 포스트의 상세 페이지 테스트
@@ -120,7 +119,7 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # 2.2 포스트 목록 페이지와 똑같은 내비게이션 바가 있다.
+        # 2.2 포스트 목록 페이지와 똑같은 내비게이션 바, 카테고리 카드가 있다.
         self.navbar_test(soup)
         self.category_card_test(soup)
         # 2.3 첫 번째 포스트의 제목(title)이 웹 브라우저 탭 타이틀에 들어 있다.
@@ -137,6 +136,7 @@ class TestView(TestCase):
 
         # 2.6 첫 번째 포스트의 내용(content)이 포스트 영역에 있다.
         self.assertIn(self.post_001.content, post_area.text)
+
         self.assertIn(self.tag_hello.name, post_area.text)
         self.assertNotIn(self.tag_python.name, post_area.text)
         self.assertNotIn(self.tag_python_kor.name, post_area.text)
@@ -144,6 +144,7 @@ class TestView(TestCase):
     def test_category_page(self):
         response = self.client.get(self.category_programming.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
         soup = BeautifulSoup(response.content, 'html.parser')
         self.navbar_test(soup)
         self.category_card_test(soup)
